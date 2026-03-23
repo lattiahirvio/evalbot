@@ -50,11 +50,13 @@ async def on_message(message):
         return
 
     command_name = args[0].lower()
+    global output
+    global env
 
     # Eval itself, the star of the show.
     if command_name == "eval":
         try:
-            code = "".join(args[1:])
+            code = " ".join(args[1:])
 
             result = lisp.eval(lisp.parse(code), env)
 
@@ -66,15 +68,18 @@ async def on_message(message):
             if result is not None:
                 response += str(result)
 
-            output = str(result)
+            output.write(result)
 
             # Cap the output length to 1900.
             # Discord allows for 2000 characters but whatever, 
             # 1900 is more than enough
-            if len(output) > 1900:
-                output = output[:1900] + "..."
+            printed = output.get_output()
+            output.clear()
+            
+            if len(printed) > 1900:
+                printed = printed[:1900] + "..."
 
-            await message.channel.send(f"```lisp\n{output}\n```")
+            await message.channel.send(f"```lisp\n{printed}\n```")
 
         except Exception as e:
             await message.channel.send(f"Error: `{e}`")

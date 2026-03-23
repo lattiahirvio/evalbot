@@ -32,6 +32,12 @@ class OutputBuffer:
 
     def get_output(self):
         return "\n".join(self.lines)
+    
+    def set_output(self, text: str):
+        self.lines = text.split("\n")
+
+    def clear(self):
+        self.lines = []
 
 # Env type.
 # This is a class so we can have scope.
@@ -71,7 +77,7 @@ def std_env(output) -> Env:
         'max': max,
         'min': min,
         'first': lambda x: x[0],
-        'second': lambda x: x[1],
+        'rest': lambda x: x[1],
         'eq?': op.eq,
         'list?': lambda x: isinstance(x, List),
         'num?':  lambda x: isinstance(x, Number),
@@ -85,7 +91,7 @@ def std_env(output) -> Env:
 
 # Pure function
 # Takes in the code
-# Returns the AST
+# Returns the tokens
 def tokenize(expr: str) -> Exp:
     return expr.replace("(", " ( ").replace(")", " ) ").split()
 
