@@ -16,7 +16,8 @@ load_dotenv()
 token = os.getenv("TOKEN")
 
 # Generate global env. This persists for the entire runtime of the program.
-env = lisp.std_env(lisp.OutputBuffer())
+output = lisp.OutputBuffer()
+env = lisp.std_env(output)
 
 # Main function. Very async.
 async def main():
@@ -36,15 +37,15 @@ async def on_message(message):
     if message.author.bot: # We dont want to evaluate stuff sent by bots
         return
 
+    # We remove leading and trailing whitespace
+    content = message.content.strip()
+
     # We Don't evaluate stuff we dont care about
     if not content.startswith(bot.command_prefix):
         return
 
-    # We remove leading and trailing whitespace
-    content = message.content.strip()
-
     # Args is everything except the command prefix
-    args = content[command_prefix.len:].split()
+    args = content[len(bot.command_prefix):].split()
     if not args:
         return
 
@@ -54,7 +55,6 @@ async def on_message(message):
     if command_name == "eval":
         try:
             code = "".join(args[1:])
-            # output = lisp.OutputBuffer()
 
             result = lisp.eval(lisp.parse(code), env)
 
